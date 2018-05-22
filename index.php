@@ -8,7 +8,12 @@ session_start();
 
 // unset($GLOBALS['_SESSION']["img_array"]); // Uncomment to clear session --- debug ---
 
-$url = "?loc={$_GET['loc']}";
+if (isset($_GET['loc'])) {
+    $url = "?loc={$_GET['loc']}";
+}else{
+    $file_name = basename(__FILE__);
+    $url = "?loc={$file_name}";
+}
 
 if (isset($_GET['delay'])) {
     $display_refresh = $_GET['delay'];
