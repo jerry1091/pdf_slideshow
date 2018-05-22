@@ -1,6 +1,6 @@
 <?php
 //Configs
-$display_refresh = 5; // Display refresh, number of seconds to display each group of pdfs
+$default_display_refresh = 5; // Default display refresh, number of seconds to display each group of pdfs if not giving in url.
 $main_page_refresh = 0; // Main page refresh, number of seconds to display the main page before loading display page.
 $group_count = 3; // Number of PDFs to display per page.
 
@@ -9,6 +9,12 @@ session_start();
 // unset($GLOBALS['_SESSION']["img_array"]); // Uncomment to clear session --- debug ---
 
 $url = "?loc={$_GET['loc']}";
+
+if (isset($_GET['delay'])) {
+    $display_refresh = $_GET['delay'];
+}else{
+    $display_refresh = $default_display_refresh;
+}
 
 function get_pdf_page_count($pdf_loc) {
 $pdf_info = shell_exec("pdfinfo ".$pdf_loc);
