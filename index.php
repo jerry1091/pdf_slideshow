@@ -4,26 +4,59 @@ $display_refresh = 5; // Display refresh, number of seconds to display each grou
 $main_page_refresh = 5; // Main page refresh, number of seconds to display the main page before loading display page.
 $group_count = 3; // Number of PDFs to display per page.
 
-// Start the session
 session_start();
-// Set session variables
-$_SESSION["refresh"] = $display_refresh;
-$_SESSION["group_count"] = $group_count;
 
-//path to directory to scan. i have included a wildcard for a subdirectory
-$directory = "pdfshare/";
+if (isset($_SESSION['img_array'])) {
+    $img_array = $_SESSION['img_array'];
+       //select first 3 images in array
+    $imgs = array_slice($img_array, 0, $group_count);
+    ?> 
+    <html>
+    <head>
+    <style>
+    .pdfobject { border: 0px; }
+    </style>
+       <title>Slideshow</title>
+    </head>
+    <body>
+        <?PHP
+         //display images
+    foreach ($imgs as $img) {
+        echo "<embed src='$img#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&overflow=hidden&view=fit' type='application/pdf' border='0' width='33%' height='100%' /> ";
+    }
+        ?>
+    </body>
+    </html>
 
-//get all image files with a .pdf extension.
-$images = glob("" . $directory . "*.pdf");
+    <?PHP
+     $img_diff = array_diff($img_array, $imgs);
 
-$imgs = '';
-// create array
-foreach($images as $image){ $imgs[] = "$image"; }
+    $_SESSION["img_array"] = $img_diff;
 
-// Set session variables
-$_SESSION["img_array"] = $imgs;
+    $count = count($img_diff);
 
-echo 'Getting array of PDFs, Please stand by .....<br>';
-echo 'This was just a place holder message, you dont get the \'wait for loading... at the 10 o\'clock at night';
-header("Refresh:$main_page_refresh; url=display.php");
-?> 
+    if ($count > 0) {
+            $_SESSION["img_array"] = $img_diff;
+        }else {
+            unset($GLOBALS[_SESSION]["img_array"]); 
+        }
+    header("Refresh:$display_refresh");
+
+}else {
+    //path to directory to scan. i have included a wildcard for a subdirectory
+    $directory = "pdfshare/";
+
+    //get all image files with a .pdf extension.
+    $images = glob("" . $directory . "*.pdf");
+
+    $imgs = '';
+    // create array
+    foreach($images as $image){ $imgs[] = "$image"; }
+
+    // Set session variables
+    $_SESSION["img_array"] = $imgs;
+
+    echo 'Getting array of PDFs, Please stand by .....<br>';
+    echo 'This was just a place holder message, you dont get the \'wait for loading... at the 10 o\'clock at night';
+    header("Refresh:$main_page_refresh");
+}
